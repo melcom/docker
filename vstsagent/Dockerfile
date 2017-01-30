@@ -1,20 +1,10 @@
 FROM buildpack-deps:jessie-scm
-#FROM ubuntu:14.04
-ENV UBUNTU_VERSION=14.04
 
-#RUN apt-get update \
-# && apt-get install -y --no-install-recommends \
-#        software-properties-common \
-# && apt-add-repository ppa:git-core/ppa \
-# && apt-get update \
-# && apt-get install -y --no-install-recommends \
-#        curl \
-#        git \
-#        jq \
-#        libcurl3 \
-#        libicu52 \
-#        libunwind8 \
-# && rm -rf /var/lib/apt/lists/*
+ENV UBUNTU_VERSION 14.04
+ENV DOCKER_BUCKET get.docker.com
+ENV DOCKER_VERSION 1.13.0
+ENV DOCKER_COMPOSE_VERSION 1.8.0
+ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/rel-1.0.0/dotnet-dev-ubuntu-x64.latest.tar.gz
 
 # Install .NET CLI dependencies
 RUN apt-get update \
@@ -34,14 +24,6 @@ RUN apt-get update \
 && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core SDK
-#ENV DOTNET_SDK_VERSION 1.0.0-rc3-004479
-#ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
-
-#ENV DOTNET_SDK_VERSION 1.0.0-rc3-004530
-#ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
-
-ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/rel-1.0.0/dotnet-dev-ubuntu-x64.latest.tar.gz
-
 RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
@@ -57,30 +39,24 @@ RUN mkdir warmup \
     && rm -rf warmup \
 && rm -rf /tmp/NuGetScratch
 
-RUN dotnet --version
-
-
-ENV DOCKER_BUCKET get.docker.com
-ENV DOCKER_VERSION 1.13.0
-
+# Install Docker
 RUN set -x \
  && curl -fSL "https://${DOCKER_BUCKET}/builds/`uname -s`/`uname -m`/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
  && tar -xzvf docker.tgz \
  && mv docker/* /usr/local/bin/ \
  && rmdir docker \
- && rm docker.tgz \
- && docker -v
-
-ENV DOCKER_COMPOSE_VERSION 1.8.0
+ && rm docker.tgz
 
 RUN set -x \
  && curl -fSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`" -o /usr/local/bin/docker-compose \
- && chmod +x /usr/local/bin/docker-compose \
- && docker-compose -v
+ && chmod +x /usr/local/bin/docker-compose
 
 
+RUN dotnet --version
 RUN docker --version
+RUN docker-compose --version
 
+# Install VSTS Agent
 WORKDIR /vsts
 
 COPY ./start.sh .
