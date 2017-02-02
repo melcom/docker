@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-if [ -e /vsts/agent ]; then
+if [ -e /agent ]; then
   export VSO_AGENT_IGNORE=_,MAIL,OLDPWD,PATH,PWD,UBUNTU_VERSION,VSO_AGENT_IGNORE
   if [ -n "$VSTS_AGENT_IGNORE" ]; then
     export VSO_AGENT_IGNORE=$VSO_AGENT_IGNORE,VSTS_AGENT_IGNORE,$VSTS_AGENT_IGNORE
   fi
   trap 'kill -SIGINT $!; exit 130' INT
   trap 'kill -SIGTERM $!; exit 143' TERM
-  /vsts/agent/bin/Agent.Listener run & wait $!
+  agent/bin/Agent.Listener run & wait $!
   exit $?
 fi
 
@@ -31,8 +31,8 @@ if [ -n "$VSTS_WORK" ]; then
   mkdir -p "$VSTS_WORK"
 fi
 
-mkdir /vsts/agent
-cd /vsts/agent
+mkdir /agent
+cd /agent
 
 cleanup() {
   if [ -e "./config.sh" ]; then

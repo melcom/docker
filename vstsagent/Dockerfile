@@ -21,6 +21,7 @@ RUN apt-get update \
         libunwind8 \
         libuuid1 \
         zlib1g \
+	iptables \
 && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core SDK
@@ -39,13 +40,16 @@ RUN mkdir warmup \
     && rm -rf warmup \
 && rm -rf /tmp/NuGetScratch
 
-# Install Docker
+#  Install Docker
 RUN set -x \
  && curl -fSL "https://${DOCKER_BUCKET}/builds/`uname -s`/`uname -m`/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
  && tar -xzvf docker.tgz \
  && mv docker/* /usr/local/bin/ \
  && rmdir docker \
  && rm docker.tgz
+
+# Install Docker from Docker Inc. repositories.
+#RUN curl -sSL https://get.docker.com/ | sh
 
 RUN set -x \
  && curl -fSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`" -o /usr/local/bin/docker-compose \
@@ -56,10 +60,12 @@ RUN dotnet --version
 RUN docker --version
 RUN docker-compose --version
 
-# Install VSTS Agent
-WORKDIR /vsts
+# Start Docker & Install VSTS Agent
+COPY ./dockerd-entrypoint.sh .
+RUN chmod +x dockerd-entrypoint.sh
 
 COPY ./start.sh .
 RUN chmod +x start.sh
 
+ENTRYPOINT ["./dockerd-entrypoint.sh"]
 CMD ["./start.sh"]
