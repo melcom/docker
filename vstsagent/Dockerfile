@@ -7,7 +7,7 @@ ENV DOCKER_VERSION 17.04.0-ce
 # https://github.com/docker/compose/releases
 ENV DOCKER_COMPOSE_VERSION 1.13.0
 # https://www.microsoft.com/net/download/linux / .NET Core 1.1.1 (Current)
-ENV DOTNET_SDK_DOWNLOAD_URL https://go.microsoft.com/fwlink/?linkid=847090
+ENV DOTNET_SDK_DOWNLOAD_URL https://go.microsoft.com/fwlink/?linkid=847089
 
 # Install .NET CLI dependencies
 RUN apt-get update \
