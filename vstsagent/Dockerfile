@@ -1,13 +1,13 @@
 FROM ubuntu:16.04
 
 ENV UBUNTU_VERSION 16.04
-ENV DOCKER_BUCKET get.docker.com
-# https://get.docker.com/builds/
-ENV DOCKER_VERSION 17.04.0-ce
+ENV DOCKER_BUCKET test.docker.com
+# https://github.com/moby/moby/releases
+ENV DOCKER_VERSION 17.05.0-ce-rc3
 # https://github.com/docker/compose/releases
 ENV DOCKER_COMPOSE_VERSION 1.13.0
-# https://www.microsoft.com/net/download/linux / .NET Core 1.1.1 (Current)
-ENV DOTNET_SDK_DOWNLOAD_URL https://go.microsoft.com/fwlink/?linkid=847089
+# https://github.com/dotnet/cli
+ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-dev-ubuntu.16.04-x64.latest.tar.gz
 
 # Install .NET CLI dependencies
 RUN apt-get update \
