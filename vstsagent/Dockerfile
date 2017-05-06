@@ -1,10 +1,13 @@
-FROM buildpack-deps:jessie-scm
+FROM ubuntu:16.04
 
-ENV UBUNTU_VERSION 14.04
+ENV UBUNTU_VERSION 16.04
 ENV DOCKER_BUCKET get.docker.com
-ENV DOCKER_VERSION 1.13.0
-ENV DOCKER_COMPOSE_VERSION 1.8.0
-ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/rel-1.0.0/dotnet-dev-ubuntu-x64.latest.tar.gz
+# https://get.docker.com/builds/
+ENV DOCKER_VERSION 17.04.0-ce
+# https://github.com/docker/compose/releases
+ENV DOCKER_COMPOSE_VERSION 1.13.0
+# https://www.microsoft.com/net/download/linux / .NET Core 1.1.1 (Current)
+ENV DOTNET_SDK_DOWNLOAD_URL https://go.microsoft.com/fwlink/?linkid=847089
 
 # Install .NET CLI dependencies
 RUN apt-get update \
@@ -14,7 +17,7 @@ RUN apt-get update \
         libcurl3 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu52 \
+        libicu55 \
         liblttng-ust0 \
         libssl1.0.0 \
         libstdc++6 \
@@ -22,7 +25,22 @@ RUN apt-get update \
         libuuid1 \
         zlib1g \
 	iptables \
+	curl \
+	ca-certificates \
+	openssl \
+	software-properties-common
+
+# Install Build tools
+RUN add-apt-repository -y ppa:git-core/ppa \
+	&& apt-get update \
+	&& apt-get -y install \
+	git \
+	nodejs \
+	npm \
+	build-essential \  
 && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/bin/nodejs /usr/bin/node && npm install gulp-cli -g
 
 # Install .NET Core SDK
 RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
@@ -48,14 +66,12 @@ RUN set -x \
  && rmdir docker \
  && rm docker.tgz
 
-# Install Docker from Docker Inc. repositories.
-#RUN curl -sSL https://get.docker.com/ | sh
-
+# Install Docker Compose from GitHub
 RUN set -x \
  && curl -fSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`" -o /usr/local/bin/docker-compose \
  && chmod +x /usr/local/bin/docker-compose
 
-
+RUN git --version
 RUN dotnet --version
 RUN docker --version
 RUN docker-compose --version
