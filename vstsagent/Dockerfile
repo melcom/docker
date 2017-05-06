@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 ENV UBUNTU_VERSION 16.04
 ENV DOCKER_BUCKET test.docker.com
 # https://github.com/moby/moby/releases
-ENV DOCKER_VERSION docker-17.05.0-ce-rc3
+ENV DOCKER_VERSION 17.05.0-ce-rc3
 # https://github.com/docker/compose/releases
 ENV DOCKER_COMPOSE_VERSION 1.13.0
 # https://github.com/dotnet/cli
